@@ -1,74 +1,79 @@
 from random import*
 from tkinter import*
+from PIL import Image
 
-def main():
-    couleurs = ["Coeur","Carreau","Pique","Trèfle"]
-    rangs = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Valet', 'Reine', 'Roi', 'As']
-    paquet = []
 
+couleurs = ["Trèfle","Carreau","Coeur","Pique"]
+rangs = ['As','2', '3', '4', '5', '6', '7', '8', '9', '10', 'Valet', 'Reine', 'Roi']
+paquet = []
+
+for couleur in couleurs:
     for rang in rangs:
-        for couleur in couleurs:
-            paquet.append((rang,couleur))
+        paquet.append((rang,couleur))
 
-    shuffle(paquet)
+# Ouvrir l'image PNG
+# image = Image.open("C:\\Users\\quent\\OneDrive\\Bureau\\BlackJack\\cartes.png")
 
-    paquet,main_joueur,main_banque = distribution(paquet)
+# # Déterminer la largeur et la hauteur de chaque carte
+# carte_largeur = image.width
+# carte_hauteur = image.height // 53
 
-    print("joueur",main_joueur,"banque",main_banque)
+# # Initialiser une liste pour stocker les cartes
+# cartes = []
 
-    etat = "en jeu"
-    etape = "choix_du_joueur"
+# # Boucler à travers chaque carte et l'ajouter à la liste
+# for i in range(52):
+#     # Calculer les coordonnées de la carte actuelle
+#     carte_x = 0
+#     carte_y = i * carte_hauteur + 170
+#     carte_box = (carte_x, carte_y, carte_x + carte_largeur, carte_y + carte_hauteur)
+        
+#     # Extraire la carte en tant qu'image séparée
+#     carte = image.crop(carte_box)
+        
+#     # Ajouter la carte à la liste
+#     paquet[i] = paquet[i] + (carte,)
 
-    while etat == "en jeu":
-        while etat == "en jeu" and etape == "choix_du_joueur":
-            choix = input()
-            if choix == "tirer":
-                paquet,main_joueur = tirer(paquet,main_joueur)
-                print("joueur",main_joueur)
-                etat = verification(main_joueur)
-            elif choix == "rester":
-                etape = "tirage_banque"
-        while etat == "en jeu" and etape =="tirage_banque":
-            if calcul_score(main_banque) < 17:
-                tirer(paquet,main_banque)
-                print("banque :",main_banque)
-            else:
-                etape = "comparaison"
-        if calcul_score(main_joueur)>calcul_score(main_banque) and verification(main_joueur) != "perdu":
-            print("c'est gagné")
-            etat = "fin de jeu"
-        elif calcul_score(main_joueur) == calcul_score(main_banque):
-            print("égalité")
-            etat = "fin de jeu"
-        elif calcul_score(main_joueur) < calcul_score(main_banque):
-            print ("c'est perdu")
-            etat = "fin de jeu"
-
-    if verification (main_joueur) == "perdu":
-        print(main_joueur,"\n","c'est perdu")
+shuffle(paquet)
 
 
-
-
-def distribution (paquet):
-
+def distribuer ():
+    global paquet, main_joueur, main_banque,joueur_valeur,banque_valeur
     main_joueur = []
     main_banque = []
     main_joueur.append(paquet.pop())
     main_banque.append(paquet.pop())
     main_joueur.append(paquet.pop())
-    main_banque.append(paquet.pop())
-    return paquet, main_joueur , main_banque
+    joueur_valeur = calcul_score(main_joueur)
+    banque_valeur = calcul_score(main_banque)
+    joueur.config(text = "Main joueur : " + str(main_joueur))
+    banque.config(text = "Main banque : " + str([main_banque,"face cachée"]))
+    
 
-def tirer (paquet, main):
-    main.append(paquet.pop())
-    return paquet, main
+def tirer ():
+    global paquet,main_joueur, joueur_valeur
+    main_joueur.append(paquet.pop())
+    joueur_valeur = calcul_score(main_joueur)
+    joueur.config(text = "Main joueur : " + str(main_joueur))
+    if joueur_valeur > 21:
+        print("perdu")
+    elif joueur_valeur == 21:
+        rester()
 
-def verification(main):
-    if calcul_score(main) > 21:
-        return "perdu"
-    else:
-        return "en jeu"
+    
+def rester ():
+    global paquet,banque_valeur
+    while banque_valeur<17:
+        main_banque.append(paquet.pop())
+        banque_valeur = calcul_score(main_banque)
+        banque.config(text = "Main banque :"  + str(main_banque))
+    if banque_valeur > 21 or joueur_valeur>banque_valeur:
+        résultat.config(text = "Résultat : gagné")
+    elif banque_valeur>joueur_valeur:
+        résultat.config(text = "Résultat : perdu")
+    else: 
+        résultat.config(text = "Résultat : égalité")
+
     
 
 def calcul_score(main):
@@ -89,17 +94,21 @@ def calcul_score(main):
 
 racine = Tk()
 
-banque = Canvas(bg = "#{:02x}{:02x}{:02x}".format(16, 180, 8),height = 700, width = 300,relief = "ridge",highlightcolor="red")
-joueur = Canvas(bg = "#{:02x}{:02x}{:02x}".format(16, 180, 8),height = 700, width = 300, relief = "ridge",highlightcolor="red")
-distribuer = Button(text="Distribuer")
-tirer1 = Button(text = "Tirer")
-rester1 = Button(text = "Distribuer")
+tapis = Canvas(bg = "#{:02x}{:02x}{:02x}".format(35, 90, 78), height = 800, width = 900, highlightbackground="#{:02x}{:02x}{:02x}".format(156, 28, 30), highlightthickness=3, relief="ridge")
 
-banque.grid(column = 0, row = 0, rowspan = 5)
-joueur.grid(column = 2, row = 0, rowspan = 5)
-distribuer.grid(column  = 1,row = 2)
-tirer1.grid(column = 0, row = 6 )
-rester1.grid(column = 2, row = 6)
+Tirer = Button(tapis, text="Tirer", command = tirer)
+Rester = Button(tapis, text="Rester", command = rester)
+Distribuer = Button(tapis, text="Distribuer", command = distribuer)
+joueur = Label(tapis, text = "Main joueur :")
+banque = Label(tapis, text = "Main banque :")
+résultat = Label(tapis, text = "Résultat :")
+tapis.create_window(200, 750, window=Tirer)
+tapis.create_window(400, 780, window=Rester)
+tapis.create_window(600, 780, window=Distribuer)
+tapis.create_window(200, 300, window=joueur)
+tapis.create_window(200, 500, window = banque)
+tapis.create_window(600,400, window = résultat)
+tapis.grid()
 
 
 racine.mainloop()
