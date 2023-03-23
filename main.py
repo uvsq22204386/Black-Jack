@@ -48,7 +48,7 @@ carte_image_en_jeu_banque = []
 état = ""
 
 def distribuer ():
-    global paquet, main_joueur, main_banque,joueur_valeur,banque_valeur,place_carte_joueur,place_carte_banque,carte_image_en_jeu_joueur,carte_image_cachée
+    global paquet, main_joueur, main_banque,joueur_valeur,banque_valeur,place_carte_joueur,place_carte_banque,carte_image_en_jeu_joueur,carte_image_cachée,Score_banque, Score_joueur
     
     main_joueur = []
     main_banque = []
@@ -60,9 +60,6 @@ def distribuer ():
     main_banque.append(paquet.pop())
     carte_image = ImageTk.PhotoImage(cartes.pop())
     carte_image_en_jeu_banque.append(carte_image)
-
-    carte_image_cachée = ImageTk.PhotoImage(carte_cachée)
-    tapis.create_image(300 + 110,300,image = carte_image_cachée, tag = "carte")
     
     main_joueur.append(paquet.pop())
     carte_image = ImageTk.PhotoImage(cartes.pop())
@@ -74,15 +71,21 @@ def distribuer ():
 
     for i in range (len(carte_image_en_jeu_joueur)):
         tapis.create_image(300+place_carte_joueur,600,image = carte_image_en_jeu_joueur[i], tags = "carte")
-        place_carte_joueur+=110 
+        place_carte_joueur+=55 
     
     for i in range (len(carte_image_en_jeu_banque)):
         tapis.create_image(300+place_carte_banque,300,image = carte_image_en_jeu_banque[i] , tag = "carte")
-        
+    
+    carte_image_cachée = ImageTk.PhotoImage(carte_cachée)
+    tapis.create_image(300 + 55,300,image = carte_image_cachée, tag = "carte")
+    
+    if etat_affich_valeur == True:
+        Score_banque.config (text =  "Score : " + str(banque_valeur))
+        Score_joueur.config (text = "Score : " + str(joueur_valeur))
     
 
 def tirer ():
-    global paquet,main_joueur, joueur_valeur,carte_image,place_carte_joueur,carte_image_en_jeu_joueur
+    global paquet,main_joueur, joueur_valeur,carte_image,place_carte_joueur,carte_image_en_jeu_joueur,Score_joueur
     
     main_joueur.append(paquet.pop())
     joueur_valeur = calcul_score(main_joueur)
@@ -92,15 +95,18 @@ def tirer ():
     
     for i in range (len(carte_image_en_jeu_joueur)):
         tapis.create_image(300+place_carte_joueur,600,image = carte_image_en_jeu_joueur[i], tags= "carte")
-    place_carte_joueur += 110
+    place_carte_joueur += 55
     if joueur_valeur > 21:
         résultat.config(text = "Résultat : perdu")
     elif joueur_valeur == 21:
         rester()
+    
+    if etat_affich_valeur == True:
+        Score_joueur.config (text = "Score : " + str(joueur_valeur))
 
     
 def rester ():
-    global paquet,banque_valeur,carte_image_en_jeu_banque,place_carte_banque
+    global paquet,banque_valeur,carte_image_en_jeu_banque,place_carte_banque,Score_banque
     while banque_valeur<17:
         main_banque.append(paquet.pop())
         carte_image = ImageTk.PhotoImage(cartes.pop())
@@ -111,7 +117,7 @@ def rester ():
 
     for i in range (len(carte_image_en_jeu_banque)):
         tapis.create_image(300+place_carte_banque,300,image = carte_image_en_jeu_banque[i], tags = "carte")
-        place_carte_banque+=110 
+        place_carte_banque+=55
 
     if banque_valeur > 21 or joueur_valeur>banque_valeur:
         résultat.config(text = "Résultat : gagné")
@@ -120,6 +126,9 @@ def rester ():
     else: 
         résultat.config(text = "Résultat : égalité")
 
+    if etat_affich_valeur == True:
+        Score_banque.config (text =  "Score : " + str(banque_valeur))
+        
     
 
 def calcul_score(main):
@@ -139,18 +148,32 @@ def calcul_score(main):
     return score
 
 def rejouer():
-    global place_carte_banque,place_carte_joueur,carte_image_en_jeu_banque,carte_image_en_jeu_joueur
+    global place_carte_banque,place_carte_joueur,carte_image_en_jeu_banque,carte_image_en_jeu_joueur, Score_banque
 
     tapis.delete("carte")
     résultat.config(text = "Résultat :")
+    Score_banque.config(text ="")
+    Score_joueur.config(text = "")
     
     place_carte_joueur = 0
     place_carte_banque = 0
     
     carte_image_en_jeu_joueur= []
     carte_image_en_jeu_banque = []
-    
-    
+          
+
+etat_affich_valeur = False         
+
+def affich_valeur():
+    global etat_affich_valeur, valeur_banque
+    if valeur.get() == 1:
+        etat_affich_valeur = True
+        Score_banque.config(text = "Score : " + str(calcul_score(main_banque)))
+        Score_joueur.config(text = "Score = " + str(calcul_score(main_joueur)))
+    else:
+        etat_affich_valeur = False
+        Score_banque.config(text = "")
+        Score_joueur.config(text = "")
 
 racine = Tk()
 
@@ -162,9 +185,25 @@ Distribuer = Button(tapis, text="Distribuer", command = distribuer)
 Rejouer = Button(tapis, text = "Rejouer", command = rejouer)
 résultat = Label(tapis, text = "Résultat :")
 
+jeton = PhotoImage(file="C:\\Users\\quent\\OneDrive\\Bureau\\BlackJack\\jeton1.png")
+Jeton = Button(tapis, image = jeton)
+Jeton.configure(bg = "#{:02x}{:02x}{:02x}".format(35, 90, 78),relief = "flat", activebackground= "#{:02x}{:02x}{:02x}".format(35, 90, 78),borderwidth=0)
+
+tapis.create_window(100,500, window = Jeton)
+
 
 tapis.create_rectangle(243,213,797,387, width = 4, outline = "#{:02x}{:02x}{:02x}".format(156, 28, 30))
 tapis.create_rectangle(243,513,797,687, width = 4, outline = "#{:02x}{:02x}{:02x}".format(156, 28, 30))
+
+valeur = IntVar()
+valeur_ou_non = Checkbutton(tapis, bg = "#{:02x}{:02x}{:02x}".format(35, 90, 78),activebackground = "#{:02x}{:02x}{:02x}".format(35, 90, 78) , text = "Afficher la valeur des mains", variable = valeur, command = affich_valeur)
+tapis.create_window(815,789, window  = valeur_ou_non)
+
+Score_banque = Label(tapis, bg = "#{:02x}{:02x}{:02x}".format(35, 90, 78), text = "")
+tapis.create_window(100,300, window = Score_banque)
+
+Score_joueur = Label(tapis, bg = "#{:02x}{:02x}{:02x}".format(35, 90, 78), text = "")
+tapis.create_window(100,600, window = Score_joueur)
 
 tapis.create_window(200, 750, window=Tirer)
 tapis.create_window(400, 780, window=Rester)
