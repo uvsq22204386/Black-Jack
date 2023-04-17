@@ -37,7 +37,6 @@ for i in range(52):
     cartes.append(carte) # ajout des images des cartes dans une liste : les images sont dans le même ordre que les cartes dans la liste "paquet"
 
 cartes_et_images = list(zip(paquet,cartes)) # création d'une liste associant : rang, couleur et image de la carte
-
 shuffle(cartes_et_images) # mélange la liste (paquet + image)
 
 paquet,cartes = list(zip(*cartes_et_images)) # redivision de la liste paquet et image qui sont donc mélangées dans le même ordre 
@@ -69,20 +68,26 @@ def distribuer ():
     global paquet, main_joueur, main_banque,joueur_valeur,banque_valeur,place_carte_joueur,place_carte_banque,carte_image_en_jeu_joueur,carte_image_cachée,Score_banque, Score_joueur,benefice
     
     # Distribution première carte au joueur :
+    paquet_vide()
+
     main_joueur.append(paquet.pop()) # rajout à la main de la dernière carte du paquet plus supression de cette carte du paquet
     carte_image = ImageTk.PhotoImage(cartes.pop()) # définition de la denière image du paquet pour que tkinter puisse l'utilitser
     carte_image_en_jeu_joueur.append(carte_image) # ajout de cette image à la liste contenant toutes les images des cartes du joueur
     
     # Distribution première carte à la banque :
+    paquet_vide()
+
     main_banque.append(paquet.pop())
     carte_image = ImageTk.PhotoImage(cartes.pop())
     carte_image_en_jeu_banque.append(carte_image)
     
     # Distribution deuxième carte au joueur :
+    paquet_vide()
+
     main_joueur.append(paquet.pop())
     carte_image = ImageTk.PhotoImage(cartes.pop())
     carte_image_en_jeu_joueur.append(carte_image)
-    
+
     # Calcul de la valeur des mains : 
     joueur_valeur = calcul_score(main_joueur)
     banque_valeur = calcul_score(main_banque)
@@ -123,13 +128,15 @@ def distribuer ():
 def tirer ():
     global paquet,main_joueur, joueur_valeur,carte_image,place_carte_joueur,carte_image_en_jeu_joueur,Score_joueur, plus_de_21
     
-        
+    paquet_vide()
+
     main_joueur.append(paquet.pop())
     joueur_valeur = calcul_score(main_joueur)
         
     carte_image = ImageTk.PhotoImage(cartes.pop())
     carte_image_en_jeu_joueur.append(carte_image)
-        
+    
+
     for i in range (len(carte_image_en_jeu_joueur)):
         tapis.create_image(300+place_carte_joueur,545,image = carte_image_en_jeu_joueur[i], tags= ("carte","split"))
     place_carte_joueur += 71
@@ -170,6 +177,9 @@ def rester ():
     global paquet,banque_valeur,carte_image_en_jeu_banque,place_carte_banque,Score_banque,benefice,premiere_main
     if jeu_split != True:
         while banque_valeur<17:
+            
+            paquet_vide()
+
             main_banque.append(paquet.pop())
             carte_image = ImageTk.PhotoImage(cartes.pop())
             carte_image_en_jeu_banque.append(carte_image)
@@ -238,50 +248,62 @@ def rester ():
                 benefice = mise//2
             elif resultat_premiere_main == "perdu" and resultat_deuxieme_main == "perdu":
                 messagebox.showinfo("Fin de partie","Résultat : \n" + "Première main : c'est perdu \n" + "Deuxième main : c'est perdu")
+        
+        Tirer.configure(state = "disabled")
+        Rester.configure(state = "disabled")
+        Doubler.configure(state = "disabled")
+        Split.configure(state = "disabled")
+        Rejouer.configure(state = "active")
+    
     else: 
         main2_split()
 
-    Tirer.configure(state = "disabled")
-    Rester.configure(state = "disabled")
-    Rejouer.configure(state = "active")
+    
     
     
         
 def doubler():
     global cash, mise
-    cash -= mise
-    mise *= 2
-    Cash.config(text = "Cash : " + str(cash))
-    Mise.config(text = "Mise : " + str(mise))
-    tirer()
-    if joueur_valeur <= 21:
-        rester()
+    if cash < mise:
+        cash_vide()
+    else:
+        cash -= mise
+        mise *= 2
+        Cash.config(text = "Cash : " + str(cash))
+        Mise.config(text = "Mise : " + str(mise))
+        tirer()
+        if joueur_valeur <= 21:
+            rester()
 
 def split():
     global place_carte_joueur,carte_image_en_jeu_joueur,carte_image_en_jeu_joueur2,carte, main_joueur,main_joueur2, jeu_split, mise,cash
-    carte_image_en_jeu_joueur2 = []
-    main_joueur2 =[]
-    place_carte_joueur = 0
-    main_joueur2.append(main_joueur.pop())
-    carte_image_en_jeu_joueur2.append(carte_image_en_jeu_joueur.pop())
-
-    jeu_split = True
-
-    tapis.delete("split")
+    if cash < mise:
+        cash_vide()
     
-    for i in range (len(carte_image_en_jeu_joueur)):
-        tapis.create_image(300+place_carte_joueur,545,image = carte_image_en_jeu_joueur[i], tags = "carte")
-        place_carte_joueur+=71
-    if etat_affich_valeur == True:
-            Score_joueur.config (text = "Score : " + str(calcul_score(main_joueur)))
-            
+    else:
+        carte_image_en_jeu_joueur2 = []
+        main_joueur2 =[]
+        place_carte_joueur = 0
+        main_joueur2.append(main_joueur.pop())
+        carte_image_en_jeu_joueur2.append(carte_image_en_jeu_joueur.pop())
 
-    cash -= mise
-    mise *= 2
-    Cash.config(text = "Cash : " + str(cash))
-    Mise.config(text = "Mise 1 : " + str(mise//2)+ "\n" + "\n" + "Mise 2 : " + str(mise//2))
+        jeu_split = True
 
-    Doubler.configure(state = "disabled")
+        tapis.delete("split")
+        
+        for i in range (len(carte_image_en_jeu_joueur)):
+            tapis.create_image(300+place_carte_joueur,545,image = carte_image_en_jeu_joueur[i], tags = "carte")
+            place_carte_joueur+=71
+        if etat_affich_valeur == True:
+                Score_joueur.config (text = "Score : " + str(calcul_score(main_joueur)))
+                
+        
+        cash -= mise
+        mise *= 2
+        Cash.config(text = "Cash : " + str(cash))
+        Mise.config(text = "Mise 1 : " + str(mise//2)+ "\n" + "\n" + "Mise 2 : " + str(mise//2))
+
+        Doubler.configure(state = "disabled")
         
     
         
@@ -351,12 +373,15 @@ def rejouer():
 
 def mise_de_10():
     global cash,mise
-    mise += 10
-    cash -= 10
-    Cash.config(text = "Cash : " + str(cash))
-    Mise.config(text = "Mise : " + str(mise))
     
-    Distribuer.configure(state = "active")
+    if cash <= 0:
+        cash_vide()
+    else:
+        mise += 10
+        cash -= 10
+        Cash.config(text = "Cash : " + str(cash))
+        Mise.config(text = "Mise : " + str(mise))
+        Distribuer.configure(state = "active")
 
 
 etat_affich_valeur = False         
@@ -372,15 +397,34 @@ def affich_valeur():
         Score_banque.config(text = "")
         Score_joueur.config(text = "")
 
+def quitter_jeu():
+    racine.destroy()
+
+def aide_jeu():
+     messagebox.showinfo("Comment jouer ?" , "Différentes étapes à suivre")
+
+def paquet_vide():
+    global paquet,cartes
+    if len(paquet) < 1:
+        messagebox.showwarning("Attention","Il n'y a plus de cartes dans le paquet, un nouveau paquet est mis en jeu.")
+        shuffle(cartes_et_images) 
+        paquet,cartes = list(zip(*cartes_et_images))  
+        paquet = list(paquet)
+        cartes = list(cartes)
+
+def cash_vide():
+    global cash
+    reponse = messagebox.askyesno("Choix","Vous n'avez plus d'argent ou pas assez, voulez-vous rajouter 500 ? \n(Si non, le jeu se fermera)")
+    if reponse:
+        cash += 500
+        Cash.config(text = "Cash : " + str(cash))
+    else:
+        racine.destroy()
 
 
 couleur_fond = "#235A4E"
 couleur_bordure = "black"
 couleur_bouton = "white"
-
-# couleur_fond = "#235A4E"
-# couleur_bordure = "#9C1C1E"
-# couleur_bouton = "#083D77"
 
 racine = Tk()
 racine.title("Blackjack")
@@ -415,9 +459,6 @@ Jeton = Button(tapis, image = jeton, command = mise_de_10)
 Jeton.configure(bg = couleur_fond,relief = "flat", activebackground= couleur_fond,borderwidth=0)
 tapis.create_window(85,420, window = Jeton)
 
-
-# tapis.create_rectangle(0,300,180,540, width = 6, outline = couleur_bordure)
-# tapis.create_rectangle(228,488,786,712, width = 4, outline = couleur_bordure)
 tapis.create_rectangle(228,88,866,312, width = 5, outline = couleur_bordure)
 tapis.create_rectangle(228,433,866,657, width = 5, outline = couleur_bordure)
 
@@ -443,6 +484,14 @@ tapis.create_window(547,414, window = Joueur)
 Banque = Label(tapis, text = "Banque", bg = couleur_fond,font =("Arial",17))
 tapis.create_window(547,69, window = Banque)
 
+interrogation  = PhotoImage(file = "interrogation.png")
+Aide = Button(tapis, image = interrogation, bg = "black", activebackground = "black" , command = aide_jeu)
+tapis.create_window(895,19, window = Aide)
+
+quitter  = PhotoImage(file = "quitter.png")
+Aide = Button(tapis, image = quitter, bg = "black", activebackground = "black", command = quitter_jeu)
+tapis.create_window(18,19, window = Aide)
+
 Tirer.configure(state = "disabled")
 Rester.configure(state = "disabled")
 Distribuer.configure(state = "disabled")
@@ -451,11 +500,4 @@ Split.configure(state = "disabled")
 Doubler.configure(state = "disabled")
 
 racine.mainloop()
-
-
-
-#tapis.itemconfigure("Rejouer_bouton", state ="hidden")
-
-# tapis.create_rectangle(650,585,905,805, outline = "#{:02x}{:02x}{:02x}".format(156, 28, 30), width =4)
-# tapis.create_rectangle(0,585,255,805, outline = "#{:02x}{:02x}{:02x}".format(156, 28, 30), width =4)
 
