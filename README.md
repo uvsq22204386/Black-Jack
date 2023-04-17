@@ -1,4 +1,5 @@
-# BlackJack : Quentin BEAUREZ et Rémi ANDONISSAMY L1 MIASHS TD 01
+# BlackJack : 
+Quentin BEAUREZ et Rémi ANDONISSAMY L1 MIASHS TD 01
                                                                                                                     
 Le black jack est un jeu de cartes au casino, ici réalisé avec python à l'aide de l'interface graphique tkinter.
 
