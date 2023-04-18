@@ -1,6 +1,5 @@
 # BlackJack : 
-Quentin BEAUREZ et Rémi ANDONISSAMY L1 MIASHS TD 01
-https://github.com/uvsq22204386/Black-Jack
+Quentin BEAUREZ et Rémi ANDONISSAMY L1 MIASHS TD 01 [github](https://github.com/uvsq22204386/Black-Jack)
                                                                                                                     
 Le black jack est un jeu de cartes au casino, ici réalisé avec python à l'aide de l'interface graphique tkinter.
 
@@ -15,7 +14,7 @@ Le black jack est un jeu de cartes au casino, ici réalisé avec python à l'aid
 Télécharger tous les documents du github et bien ouvrir le dossier dans votre éditeur de code pour qu'il puisse trouver les images, sinon changer le chemin des images.
 
 Différents boutons permettent de réaliser les différentes actions d'un jeu de blackjack.
-L'ordre d'utilisation des boutons importants : vous ne pouvez pas tirer une carte sans avoir miser ou distribuer par exemple. 
+L'ordre d'utilisation des boutons est important : vous ne pouvez pas tirer une carte sans avoir miser ou distribuer par exemple. 
 
 Quel est l'ordre ?
 
@@ -32,6 +31,9 @@ Quel est l'ordre ?
  possibilité, soit de mettre un nouveau paquet en jeu ou bien de fermer le jeu, à l'aide d'un message qui vous sera affiché
  - Lorsque vous essayez de miser plus que ce que vous avez, alors vous aurez la possibilité, soit de récupérer 500 crédits ou bien de fermer le jeu à l'aide un message
  qui vous sera affiché
+ - Lors de l'utilisation du split, votre paire est divisée en 2 mains différentes et votre mise doublée, vous jouez d'abord votre première main puis lorsque vous avez 
+ appuyé sur rester ou dépasser 21 avec cette première main vous passez à la deuxième main, et enfin le bilan des deux mains
+ - Lors de l'utilisation de doubler, votre mise est doublée et vous tirez une seule carte entraînant la fin de la partie 
 
 Boutons bonus : afficher la valeur des mains, quitter, aide.
 
