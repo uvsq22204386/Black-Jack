@@ -170,21 +170,26 @@ def tirer ():
         if joueur_valeur>21:
             # Vérifie si on est sur la deuxième main du split :
             if jeu_split == "deuxieme_main":
-                # Vérifie si la première main est au-dessus de 21 et la dexuième aussi
+                # Vérifie si la première main est au-dessus de 21 et la dexuième aussi :
                 if plus_de_21 == True and calcul_score(main_joueur) > 21:
                     messagebox.showinfo("Fin de partie","Résultat : \n" + "Première main : c'est perdu \n" + "Deuxième main : c'est perdu")
                     
+                    # Permet de désactiver les boutons qui ne peuvent pas être utilisés et activer les autres :
                     Tirer.configure(state = "disabled")
                     Rester.configure(state = "disabled")
                     Rejouer.configure(state = "active")
 
+                # Si la deuxième main n'est pas au dessus de 21, rester pour que la banque tire ses cartes et affiche le résultat :
                 else:
                     rester()
+            # Si le jeu n'est pas à la deuxième main 
             else:
+                # Vérifie si la première main est à plus de 21 :
                 if calcul_score(main_joueur) > 21:
-                    plus_de_21 = True
-                tapis.after(1500, main2_split)
+                    plus_de_21 = True # Indique que la première main est à 21 pour la suite de la partie
+                tapis.after(1500, main2_split) # Attend 1.5sc pour que le joueur voit qu'il a dépassé 21 avec sa première main puis lance la fonction pour passer à la deuxième main
     
+    # Permet de désactiver les boutons qui ne peuvent pas être utilisés et activer les autres :
     Doubler.configure(state = "disabled")
     Split.configure(state = "disabled")
         
@@ -193,7 +198,7 @@ def tirer ():
 def rester ():
     '''Cette fonction permet au joueur de rester s'il le veut, cela entrainera le tirage de la banque et la fin de partie avec la comparaison des scores entre la banque et le joueur'''
     global paquet,banque_valeur,carte_image_en_jeu_banque,place_carte_banque,Score_banque,benefice,premiere_main
-    # Si le joueur n'a pas split :
+    # Si le joueur n'a pas split ou n'est pas à la deuxième main du split :
     if jeu_split != True:
         # La banque tire jusqu'à avoir 17 ou plus :
         while banque_valeur<17:
@@ -217,7 +222,9 @@ def rester ():
             tapis.create_image(300+place_carte_banque,200,image = carte_image_en_jeu_banque[i], tags = "carte")
             place_carte_banque+=71 # Décalage pour la prochaine carte
 
-        if premiere_main == 0:
+        # Si la première main a une valeur à 0 : le joueur n'a pas split
+        if premiere_main == 0: 
+            # Affichage le résultat de la partie et définit le bénéfice:
             if banque_valeur > 21 or joueur_valeur>banque_valeur:
                 messagebox.showinfo("Fin de partie","Résultat : gagné")
                 benefice = 2*mise
@@ -229,8 +236,9 @@ def rester ():
                 messagebox.showinfo("Fin de partie","Résultat : égalité")
                 benefice = mise
 
-            
+        # Si la première main a une valeur différente à 0 : le jouer a split 
         else:
+            # Bilan de la première main : 
             if premiere_main > 21 or (banque_valeur > premiere_main and banque_valeur <= 21):
                 resultat_premiere_main = "perdu"
             elif premiere_main == banque_valeur:
@@ -238,6 +246,7 @@ def rester ():
             elif premiere_main > banque_valeur or banque_valeur > 21:
                 resultat_premiere_main = "gagne"
             
+            # Bilan de la dexuième main : 
             if joueur_valeur > 21 or (banque_valeur > joueur_valeur and banque_valeur <= 21):
                 resultat_deuxieme_main = "perdu"
             elif joueur_valeur == banque_valeur:
@@ -245,6 +254,7 @@ def rester ():
             elif joueur_valeur > banque_valeur or banque_valeur > 21:
                 resultat_deuxieme_main = "gagne"
 
+            # Affichage le résultat de la partie et définit le bénéfice en fonction du résultat des deux mains :
             if resultat_premiere_main == "gagne" and resultat_deuxieme_main == "gagne":
                 messagebox.showinfo("Fin de partie","Résultat : \n" + "Première main : c'est gagné \n" + "Deuxième main : c'est gagné")
                 benefice = 2*mise
@@ -272,6 +282,7 @@ def rester ():
             elif resultat_premiere_main == "perdu" and resultat_deuxieme_main == "perdu":
                 messagebox.showinfo("Fin de partie","Résultat : \n" + "Première main : c'est perdu \n" + "Deuxième main : c'est perdu")
         
+        # Permet de désactiver les boutons qui ne peuvent pas être utilisés et activer les autres :
         Tirer.configure(state = "disabled")
         Rester.configure(state = "disabled")
         Doubler.configure(state = "disabled")
@@ -279,6 +290,7 @@ def rester ():
         Rejouer.configure(state = "active")
     
     else: 
+        # Permet de passer à la deuxième main :
         main2_split()
 
     
@@ -464,7 +476,16 @@ def quitter_jeu():
 
 def aide_jeu():
     '''Cette fonction permet d'ouvir une aide qui explique comment jouer sur ce jeu de blackjack'''
-    messagebox.showinfo("Comment jouer ?" , "Différentes étapes à suivre")
+    messagebox.showinfo("Comment jouer ?" , """Pour jouer, vous devez appuyer sur les différents boutons, cependant il y a un ordre à respecter :
+    - Miser (en cliquant sur l'image de jeton), chaque appui sur le bouton ajoute 10 à votre mise totale
+    - Distribuer
+    - Selon votre choix : tirer, rester ou doubler, split si vous avez une paire
+    - Si vous avez tiré, vous pouvez encore tirer ou bien rester si vous n'avez pas dépassé 21
+    - Rester met fin à votre partie
+    - Rejouer permet alors de faire les paiements en fonction du gagnant et de lancer une nouvelle partie
+    
+Pour plus d'informations veuillez-vous réferrer au README.md, notamment pour comment utiliser le split et les règles du jeu."""
+    )
 
 def paquet_vide():
     '''Cette fonction vérifie si le paquet de cartes est vide'''
