@@ -27,8 +27,7 @@ Quel est l'ordre ?
 
 
 ## Informations utiles
- - Lorsque le programme est lancé, un paquet mélangé est mis en jeu, si pendant que vous jouez, vous utilisez toutes les cartes du paquet, alors vous aurez la 
- possibilité, soit de mettre un nouveau paquet en jeu ou bien de fermer le jeu, à l'aide d'un message qui vous sera affiché
+ - Lorsque le programme est lancé, un paquet mélangé est mis en jeu, si pendant que vous jouez, vous utilisez toutes les cartes du paquet alors un nouveau paquet va être mis en jeu
  - Lorsque vous essayez de miser plus que ce que vous avez, alors vous aurez la possibilité, soit de récupérer 500 crédits ou bien de fermer le jeu à l'aide un message
  qui vous sera affiché
  - Lors de l'utilisation du split, votre paire est divisée en 2 mains différentes et votre mise doublée, vous jouez d'abord votre première main puis lorsque vous avez 
